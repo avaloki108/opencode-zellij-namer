@@ -1,7 +1,7 @@
 import { execFileSync, spawn } from "child_process";
 import { readFileSync, existsSync } from "fs";
 import { join, resolve, basename } from "path";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 
 const INTENTS = ["feat", "fix", "debug", "refactor", "test", "doc", "ops", "review", "spike"] as const;
 type Intent = (typeof INTENTS)[number];
@@ -37,7 +37,7 @@ function loadConfig(): PluginConfig {
     cooldownMs: Number(env.OPENCODE_ZN_COOLDOWN_MS) || 5 * 60 * 1000,
     debounceMs: Number(env.OPENCODE_ZN_DEBOUNCE_MS) || 5 * 1000,
     maxSignals: Number(env.OPENCODE_ZN_MAX_SIGNALS) || 25,
-    model: env.OPENCODE_ZN_MODEL || "gemini-3-flash-preview",
+    model: env.OPENCODE_ZN_MODEL || "GLM-4.7",
     debug: env.OPENCODE_ZN_DEBUG === "1",
     customInstructions: env.OPENCODE_ZN_INSTRUCTIONS || "",
     useAgentsMd: env.OPENCODE_ZN_USE_AGENTS_MD !== "0",
@@ -258,15 +258,17 @@ async function generateNameWithAI(
   agentsMdGuidance: string | null,
   log: ReturnType<typeof createLogger>
 ): Promise<string | null> {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+  const apiKey = process.env.ZAI_API_KEY;
   if (!apiKey) {
-    log.debug("No API key found, skipping AI generation");
+    log.debug("No ZAI_API_KEY found, skipping AI generation");
     return null;
   }
 
   try {
-    const gemini = new GoogleGenerativeAI(apiKey);
-    const model = gemini.getGenerativeModel({ model: config.model });
+    const client = new OpenAI({
+      apiKey: apiKey,
+      baseURL: "https://api.z.ai/api/coding/paas/v4",
+    });
 
     const safeSignals = signals.slice(-5).map((s) => s.slice(0, 100));
     
@@ -290,11 +292,16 @@ Rules:
     }
 
     const result = await Promise.race([
-      model.generateContent(prompt),
+      client.chat.completions.create({
+        model: config.model,
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 50,
+        temperature: 0.7,
+      }),
       new Promise<never>((_, reject) => setTimeout(() => reject(new Error("timeout")), 2000)),
     ]);
 
-    const text = result.response.text().trim().toLowerCase();
+    const text = (result.choices[0]?.message?.content || "").trim().toLowerCase();
     const match = text.match(/^[a-z0-9-]{5,40}$/);
     if (match) {
       log.debug(`AI generated name: ${match[0]}`);

@@ -4,7 +4,7 @@ This file provides guidance for AI agents (like OpenCode, Claude, GPT, Cursor, e
 
 ## Project Overview
 
-**opencode-zellij-namer** is an OpenCode plugin that automatically renames Zellij terminal sessions based on project context and work activity. It uses AI (Gemini) for intelligent naming with heuristic fallbacks.
+**opencode-zellij-namer** is an OpenCode plugin that automatically renames Zellij terminal sessions based on project context and work activity. It uses AI (Z.AI GLM-4.7) for intelligent naming with heuristic fallbacks.
 
 ## Architecture
 
@@ -22,7 +22,7 @@ dist/                 # Compiled output (do not edit)
 | `loadConfig()` | Loads configuration from environment variables |
 | `inferIntent()` | Heuristic intent detection (feat, fix, debug, etc.) |
 | `extractTag()` | Extracts contextual tag from branch, directory, or signals |
-| `generateNameWithAI()` | AI-powered name generation via Gemini |
+| `generateNameWithAI()` | AI-powered name generation via Z.AI |
 | `buildSessionName()` | Constructs final sanitized session name |
 | `renameSession()` | Executes Zellij CLI to rename session |
 
@@ -116,11 +116,11 @@ All configuration via environment variables:
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `GEMINI_API_KEY` | - | Required for AI naming |
+| `ZAI_API_KEY` | - | Required for AI naming |
 | `OPENCODE_ZN_COOLDOWN_MS` | 300000 | Min ms between renames |
 | `OPENCODE_ZN_DEBOUNCE_MS` | 5000 | Min ms between checks |
 | `OPENCODE_ZN_MAX_SIGNALS` | 25 | Max signals in ring buffer |
-| `OPENCODE_ZN_MODEL` | gemini-3-flash-preview | Gemini model to use |
+| `OPENCODE_ZN_MODEL` | GLM-4.7 | Z.AI model to use |
 | `OPENCODE_ZN_DEBUG` | 0 | Enable debug logging (1/0) |
 | `OPENCODE_ZN_INSTRUCTIONS` | - | Custom naming instructions |
 
@@ -174,7 +174,7 @@ Debug output includes:
 ## Dependencies
 
 ### Runtime
-- `@google/generative-ai` - Gemini API client
+- `openai` - OpenAI-compatible API client for Z.AI
 
 ### Development
 - `bun` - Runtime, test runner, package manager
