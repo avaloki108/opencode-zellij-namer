@@ -11,7 +11,7 @@ Automatically renames your Zellij terminal sessions based on what you're working
 ## Features
 
 - **Automatic naming**: Sessions named like `myproject-feat-auth` or `api-debug-cache`
-- **AI-powered**: Uses Gemini 3 Flash to generate contextual, meaningful names
+- **AI-powered**: Uses Z.AI GLM-4.7 to generate contextual, meaningful names
 - **AGENTS.md aware**: Reads project-specific naming conventions from your repo's `AGENTS.md`
 - **Custom instructions**: Personal naming preferences via env var (override AGENTS.md)
 - **Non-blocking**: Fire-and-forget design never slows down your workflow
@@ -42,11 +42,11 @@ All configuration is via environment variables:
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `GEMINI_API_KEY` | - | Google AI API key for smart naming |
+| `ZAI_API_KEY` | - | Z.AI API key for smart naming |
 | `OPENCODE_ZELLIJ_DEBUG` | `0` | Set to `1` for debug logging |
 | `OPENCODE_ZELLIJ_COOLDOWN_MS` | `300000` | Minimum ms between renames (5 min) |
 | `OPENCODE_ZELLIJ_DEBOUNCE_MS` | `5000` | Debounce interval for checks (5 sec) |
-| `OPENCODE_ZELLIJ_MODEL` | `gemini-3-flash-preview` | Gemini model to use |
+| `OPENCODE_ZELLIJ_MODEL` | `GLM-4.7` | Z.AI model to use |
 | `OPENCODE_ZELLIJ_MAX_SIGNALS` | `25` | Max activity signals to retain |
 | `OPENCODE_ZELLIJ_TIMEOUT_MS` | `3000` | AI request timeout |
 | `OPENCODE_ZN_INSTRUCTIONS` | - | Custom naming instructions for AI |
@@ -107,7 +107,7 @@ Custom instructions **take precedence** over AGENTS.md when they conflict. This 
 ### Example
 
 ```bash
-export GEMINI_API_KEY="your-api-key"
+export ZAI_API_KEY="your-api-key"
 export OPENCODE_ZELLIJ_DEBUG=1
 export OPENCODE_ZELLIJ_COOLDOWN_MS=600000  # 10 minutes
 ```
@@ -172,7 +172,7 @@ This ensures you can identify which terminal is which at a glance, even with mul
 
 ## Privacy
 
-When AI naming is enabled, the following data is sent to Google's Gemini API:
+When AI naming is enabled, the following data is sent to Z.AI's GLM-4.7 API:
 
 | Data | Example | Purpose |
 |------|---------|---------|
@@ -189,14 +189,14 @@ When AI naming is enabled, the following data is sent to Google's Gemini API:
 - Environment variables
 - System information
 
-**To disable AI**: Simply don't set `GEMINI_API_KEY`. The plugin falls back to heuristic naming.
+**To disable AI**: Simply don't set `ZAI_API_KEY`. The plugin falls back to heuristic naming.
 
 ## Requirements
 
 - [OpenCode](https://opencode.ai) v0.1.0+
 - [Zellij](https://zellij.dev) terminal multiplexer
 - Node.js 18+
-- (Optional) Google AI API key for smart naming
+- (Optional) Z.AI API key for smart naming
 
 ## Troubleshooting
 
@@ -215,7 +215,7 @@ export OPENCODE_ZELLIJ_DEBUG=1
 
 ### AI naming not working
 
-1. Verify API key: `echo $GEMINI_API_KEY`
+1. Verify API key: `echo $ZAI_API_KEY`
 2. Check network connectivity
 3. Enable debug logging to see AI responses
 
